@@ -1,0 +1,53 @@
+name: Deploy the relay
+
+# Runs when the Worker changes, or by hand once the owner has saved the token.
+# CLOUDFLARE_API_TOKEN is the only secret of this repository: limited to Workers
+# and D1 on a free account with no payment method. It is never saved in OCD's
+# dataset repository, and no GitHub credential ever goes to Cloudflare.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "migrations/**"
+      - "wrangler.toml"
+      - "package-lock.json"
+      - "scripts/**"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      RELAY_SUBDOMAIN: ${{ vars.RELAY_SUBDOMAIN }}
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - run: npm ci
+      - run: npm test
+      - name: Deploy
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::notice::CLOUDFLARE_API_TOKEN is not saved yet, so nothing was deployed."
+            exit 0
+          fi
+          scripts/deploy.sh
+      - name: Record the relay's address
+        run: |
+          git add relay-url.txt 2>/dev/null || exit 0
+          git diff --cached --quiet && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -q -m "Record the relay's address"
+          git push

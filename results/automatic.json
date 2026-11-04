@@ -1,0 +1,7 @@
+{
+  "schema": "ocd-automatic-results",
+  "schema_version": 1,
+  "description": "Weekly counts from phones whose owner said yes to OCD Android's question, as device > carrier > plan, by month (OCD rule round 48). A row appears only with at least 3 reports in one ISO week, and each count is a number of weekly reports, not of phones or people. Every row reads \"automatic, reported by phones, not checked by OCD, counts can be faked\". Anyone can send such a report. A row says what reports claimed, not what a carrier or tariff offers. Plan is always unknown. Phones and ROM builds never read this file, it sets no carrier value, and its counts are never added to the reports in OCD's observed/ folder.",
+  "months": [],
+  "devices": []
+}

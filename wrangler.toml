@@ -1,0 +1,24 @@
+# The relay of Open Carrier Data's weekly phone counts. README.md says what it
+# keeps. Nothing here turns on a log: the Worker logs nothing, and logs,
+# Logpush and traces stay off so no request leaves a record at Cloudflare's
+# side that this project could read back.
+name = "week-counts"
+main = "src/worker.js"
+compatibility_date = "2026-07-01"
+workers_dev = true
+preview_urls = false
+logpush = false
+
+[observability]
+enabled = false
+
+[triggers]
+# Daily, so a week leaves within a day of reaching 8 weeks.
+crons = ["17 3 * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "week-counts"
+# scripts/deploy.sh writes the real ID into a copy of this file on the runner.
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"

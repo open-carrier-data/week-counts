@@ -1,0 +1,37 @@
+name: Publish the month's counts
+
+# Weekly: a week closes on a Monday, and a month is read well inside the
+# relay's 8 weeks. It holds no secret. It reads the relay's public GET and OCD's
+# public lists and commits with this repository's own token. Every run commits
+# status.txt, because GitHub turns off the schedule of a public repository with
+# no activity for 60 days.
+on:
+  schedule:
+    - cron: "23 5 * * 2"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - name: Read the relay and write the files
+        run: node publish/run.mjs
+      - name: Commit
+        run: |
+          git add results status.txt
+          git diff --cached --quiet && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -q -m "Status of $(date -u +%F)"
+          git push

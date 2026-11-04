@@ -124,12 +124,12 @@ test("values on no public list are dropped: model, carrier, APN row of another c
   await seed(relay.db, week, one("apn:other.apn|default|IP"), 9);
   await seed(relay.db, week, one("apn:sos|emergency|IPV4V6"), 9);
   await seed(relay.db, week, one("apn:made.up.row|default|IP"), 9);
-  await seed(relay.db, week, report({ week, carrier: "262-03", results: [{ entry: "apn:internet|default,supl|IPV4V6", result: "works" }] }), 3);
+  await seed(relay.db, week, report({ week, carrier: "26203", results: [{ entry: "apn:internet|default,supl|IPV4V6", result: "works" }] }), 3);
   await seed(relay.db, week, report({ week, device: { ...report().device, model: "other" }, results: [{ entry: "vonr:on", result: "signed_in" }] }), 3);
   const line = await run();
   const rows = allRows(file());
   assert.deepEqual(rows.map((row) => `${row.model} ${row.carrier} ${row.entry}`).sort(), [
-    `SM-G981B 262-03 apn:internet|default,supl|IPV4V6`,
+    `SM-G981B 26203 apn:internet|default,supl|IPV4V6`,
     `other ${PROFILE} vonr:on`,
   ]);
   assert.match(line, /7 not on a list/);
@@ -139,7 +139,7 @@ test("values on no public list are dropped: model, carrier, APN row of another c
 test("the emergency row is never on the lists", () => {
   const held = readLists(lists());
   assert.deepEqual([...held.rowsOf.get(PROFILE)], ["apn:internet|default,supl|IPV4V6"]);
-  assert.deepEqual([...held.rowsOf.get("262-03")], ["apn:internet|default,supl|IPV4V6"]);
+  assert.deepEqual([...held.rowsOf.get("26203")], ["apn:internet|default,supl|IPV4V6"]);
 });
 
 test("a month waits until its last week is closed, then is published once", async () => {

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # Checks a live relay with made-up values: a bad body is refused, a good one is
-# counted, and the public read answers. 999-99 is on none of OCD's lists, so
+# counted, and the public read answers. 99999 is on none of OCD's lists, so
 # the made-up cell can never be published and leaves at 8 weeks.
 set -euo pipefail
 
 url="$1"
 week="$(date -u +%G-W%V)"
-good="{\"schema\":\"ocd-week-report\",\"schema_version\":1,\"week\":\"$week\",\"app_version\":\"0.0\",\"device\":{\"model\":\"other\",\"rom_family\":\"other\",\"android_major\":10,\"ims_stack\":\"not_known\"},\"carrier\":\"999-99\",\"results\":[{\"entry\":\"volte:on\",\"result\":\"not_possible\"}]}"
+good="{\"schema\":\"ocd-week-report\",\"schema_version\":1,\"week\":\"$week\",\"app_version\":\"0.0\",\"device\":{\"model\":\"other\",\"rom_family\":\"other\",\"android_major\":10,\"ims_stack\":\"not_known\"},\"carrier\":\"99999\",\"results\":[{\"entry\":\"volte:on\",\"result\":\"not_possible\"}]}"
 
 status() { curl -sS -o /dev/null -w '%{http_code}' "$@"; }
 expect() {

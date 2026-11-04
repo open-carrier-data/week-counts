@@ -100,7 +100,7 @@ test("the public read serves closed weeks at or above the threshold, and no open
   const closed = weekFrom(Date.now(), -2);
   await seed(relay.db, open, report(), 9);
   await seed(relay.db, closed, report(), 3);
-  await seed(relay.db, closed, report({ carrier: "262-03" }), 2);
+  await seed(relay.db, closed, report({ carrier: "26203" }), 2);
   const index = await (await fetch(`${relay.url}/v1/closed`)).json();
   assert.deepEqual(index.weeks, [closed]);
   assert.equal((await fetch(`${relay.url}/v1/closed/${open}`)).status, 404);

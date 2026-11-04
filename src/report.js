@@ -27,8 +27,11 @@ export const FEATURES = ["volte", "vowifi", "sms_over_ims", "video_calling", "vo
 
 const WEEK = /^[0-9]{4}-W[0-9]{2}$/;
 const APP_VERSION = /^[0-9]{1,3}\.[0-9]{1,3}$/;
-const MODEL = /^[A-Za-z0-9][A-Za-z0-9 ._()+-]{0,39}$/;
-const CARRIER = /^(?:(?:open|fill)\.[0-9]{5,6}\.[0-9a-f]{12}|[0-9]{3}-[0-9]{2,3})$/;
+// OCD's public model list holds names such as `P10/Q10` and `MTN sm@rt S750`, so
+// the shape stays wide. Only a digest of the model is ever kept, and only a model
+// on the list can be read back.
+const MODEL = /^[^\u0000-\u001f\u007f]{1,96}$/;
+const CARRIER = /^(?:open\.[0-9]{5,6}\.[0-9a-f]{12}|[0-9]{5,6})$/;
 const FEATURE_ENTRY = new RegExp(`^(?:${FEATURES.join("|")}):(?:on|off)$`);
 // apn: and the row key of the tap report: the APN, its sorted types, its protocol.
 const APN_ENTRY = /^apn:[a-z0-9][a-z0-9._-]{0,62}\|([a-z_*]{1,16}(?:,[a-z_*]{1,16}){0,15})\|(?:IP|IPV6|IPV4V6|PPP|NON-IP|UNSTRUCTURED)?$/;
@@ -58,7 +61,7 @@ export function reportAllowed(report, nowMs) {
   if (!sameKeys(device, ["model", "rom_family", "android_major", "ims_stack"])) return false;
   if (typeof device.model !== "string" || !MODEL.test(device.model)) return false;
   if (!ROM_FAMILIES.includes(device.rom_family) || !IMS_STACKS.includes(device.ims_stack)) return false;
-  if (!Number.isInteger(device.android_major) || device.android_major < 10 || device.android_major > 40) return false;
+  if (!Number.isInteger(device.android_major) || device.android_major < 10 || device.android_major > 99) return false;
   if (typeof report.carrier !== "string" || !CARRIER.test(report.carrier)) return false;
   const { results } = report;
   if (!Array.isArray(results) || results.length < 1 || results.length > MAX_RESULTS) return false;

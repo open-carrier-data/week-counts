@@ -36,9 +36,19 @@ test("week: only this one or the last", () => {
 test("app_version is major.minor, carrier is a profile ID or a network", () => {
   refused((r) => { r.app_version = "0.5.1"; });
   refused((r) => { r.carrier = "Vodafone"; });
-  refused((r) => { r.carrier = "26203"; });
-  assert.equal(reportAllowed(report({ carrier: "262-03" }), NOW), true);
-  assert.equal(reportAllowed(report({ carrier: "fill.26203.0123456789ab" }), NOW), true);
+  refused((r) => { r.carrier = "262-03"; });
+  refused((r) => { r.carrier = "fill.26203.0123456789ab"; });
+  assert.equal(reportAllowed(report({ carrier: "26203" }), NOW), true);
+  assert.equal(reportAllowed(report({ carrier: "310260" }), NOW), true);
+});
+
+test("device.model takes every name on OCD's list, and no control character", () => {
+  for (const model of ["MTN sm@rt S750", "P10/Q10/PTAB1040/PTAB1041", 'Bush Spira B1 8"', "other", "x".repeat(96)]) {
+    assert.equal(reportAllowed(report({ device: { ...report().device, model } }), NOW), true, model);
+  }
+  refused((r) => { r.device.model = ""; });
+  refused((r) => { r.device.model = "x".repeat(97); });
+  refused((r) => { r.device.model = "a\nb"; });
 });
 
 test("results: 1 to 16, each entry once, closed words", () => {

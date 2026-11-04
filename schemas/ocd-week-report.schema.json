@@ -16,16 +16,16 @@
       "additionalProperties": false,
       "required": ["model", "rom_family", "android_major", "ims_stack"],
       "properties": {
-        "model": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9 ._()+-]{0,39}$", "description": "Build.MODEL when it is on OCD's public generated/devices/android.json, else the word other." },
+        "model": { "type": "string", "pattern": "^[^\\u0000-\\u001f\\u007f]{1,96}$", "description": "Build.MODEL when it is on OCD's public generated/devices/android.json, else the word other." },
         "rom_family": { "enum": ["stock", "lineageos", "other"] },
-        "android_major": { "type": "integer", "minimum": 10, "maximum": 40 },
+        "android_major": { "type": "integer", "minimum": 10, "maximum": 99 },
         "ims_stack": { "enum": ["phh_ims", "samsung_ims", "aosp_imsstack", "other", "not_known"] }
       }
     },
     "carrier": {
       "type": "string",
-      "pattern": "^((open|fill)\\.[0-9]{5,6}\\.[0-9a-f]{12}|[0-9]{3}-[0-9]{2,3})$",
-      "description": "The matched OCD profile's ID, or the home MCC-MNC only when no profile matches."
+      "pattern": "^(open\\.[0-9]{5,6}\\.[0-9a-f]{12}|[0-9]{5,6})$",
+      "description": "The matched OCD profile's ID, or the home network code (MCC and MNC, no separator) only when no profile matches."
     },
     "results": {
       "type": "array",

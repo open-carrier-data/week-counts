@@ -77,7 +77,7 @@ export function readLists({ android, profiles, index, xml }) {
 
   const carriers = new Set();
   for (const [network, { profiles: list }] of Object.entries(profiles.networks)) {
-    carriers.add(network);
+    carriers.add(network.replace("-", ""));
     for (const profile of list) carriers.add(profile.id);
   }
 
@@ -92,7 +92,7 @@ export function readLists({ android, profiles, index, xml }) {
     if (apn === null) throw new Refused("apn-index.json and apns-conf.xml disagree");
     const entry = `apn:${apnKey(apn)}`;
     if (!entryAllowed(entry)) continue;
-    add(`${apn.mcc}-${apn.mnc}`, entry);
+    add(`${apn.mcc}${apn.mnc}`, entry);
     for (const profile of row.profiles) add(profile, entry);
   }
   return { models, carriers, rowsOf };

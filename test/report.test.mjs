@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { CALIBRATED_STACKS, IMS_STACKS, MAX_RESULTS, RESULTS, ROM_FAMILIES, entryAllowed, reportAllowed } from "../src/report.js";
+import { CALIBRATED_STACKS, IMS_STACKS, MAX_RESULTS, RESULTS, ROM_FAMILIES, UNCALIBRATED_RESULTS, entryAllowed, reportAllowed } from "../src/report.js";
 import { isClosed, monthOfWeek, mondayOfWeek, weekFrom, weekOf, weeksOfMonth } from "../src/week.js";
 import { report } from "./helpers.mjs";
 
@@ -56,9 +56,14 @@ test("no emergency row, however it is typed", () => {
   assert.equal(entryAllowed("apn:internet|default,supl|"), true);
 });
 
-test("an uncalibrated stack sends no works and no failed (SM8)", () => {
+test("calls_out passes on a calibrated stack (round 49)", () => {
+  assert.equal(reportAllowed(report({ results: [{ entry: "volte:on", result: "calls_out" }] }), NOW), true);
+  assert.equal(UNCALIBRATED_RESULTS.includes("calls_out"), false);
+});
+
+test("an uncalibrated stack sends no works, calls_out or failed (SM8)", () => {
   for (const stack of IMS_STACKS.filter((name) => !CALIBRATED_STACKS.includes(name))) {
-    for (const result of ["works", "failed"]) refused((r) => { r.device.ims_stack = stack; r.results = [{ entry: "volte:on", result }]; });
+    for (const result of ["works", "calls_out", "failed"]) refused((r) => { r.device.ims_stack = stack; r.results = [{ entry: "volte:on", result }]; });
     const fine = report();
     fine.device.ims_stack = stack;
     fine.results = [{ entry: "volte:on", result: "signed_in" }];

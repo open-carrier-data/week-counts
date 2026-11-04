@@ -27,6 +27,15 @@ test("a good report adds one per entry and answers 204 with no body", async () =
   assert.deepEqual((await rows()).map((row) => row.n), [2, 2]);
 });
 
+test("a calls_out result gets its own counter, and only on a calibrated stack", async () => {
+  const value = report({ results: [{ entry: "volte:on", result: "calls_out" }] });
+  assert.equal((await post(relay.url, value)).status, 204);
+  assert.deepEqual((await rows()).map((row) => row.cell.split(".").at(-1)), ["calls_out"]);
+  const other = report({ results: value.results, device: { ...report().device, ims_stack: "phh_ims" } });
+  assert.equal((await post(relay.url, other)).status, 400);
+  assert.equal((await rows()).length, 1);
+});
+
 test("a bad body is refused whole and stores nothing", async () => {
   const bad = [
     report({ extra: 1 }),

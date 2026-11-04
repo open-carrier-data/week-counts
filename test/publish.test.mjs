@@ -93,6 +93,14 @@ test("a row with 3 reports in one week is published by month, under device > car
   assert.equal(/anonym/i.test(text), false);
 });
 
+test("calls_out is published as its own row, beside works", async () => {
+  const one = (result) => report({ week: WEEKS[0], results: [{ entry: "volte:on", result }] });
+  await seed(relay.db, WEEKS[0], one("calls_out"), 3);
+  await seed(relay.db, WEEKS[0], one("works"), 4);
+  await run();
+  assert.deepEqual(allRows(file()).map((row) => `${row.result} ${row.reports}`).sort(), ["calls_out 3", "works 4"]);
+});
+
 test("2 reports a week stay out, even when the month adds up to more", async () => {
   await seed(relay.db, WEEKS[0], report({ week: WEEKS[0] }), 2);
   await seed(relay.db, WEEKS[1], report({ week: WEEKS[1] }), 2);

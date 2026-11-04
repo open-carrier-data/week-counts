@@ -17,8 +17,10 @@ export const KEEP_WEEKS = 8;
 
 export const ROM_FAMILIES = ["stock", "lineageos", "other"];
 export const IMS_STACKS = ["phh_ims", "samsung_ims", "aosp_imsstack", "other", "not_known"];
-export const RESULTS = ["works", "signed_in", "service_off", "not_possible", "failed"];
-/** SM8: where one calls-out pass confirmed the app's readings. Elsewhere works and failed mean nothing. */
+// works is round 26's L3, calls both ways on one SIM, bearer and build. calls_out is
+// L2, an outgoing call only (OCD rule round 49, item 1).
+export const RESULTS = ["works", "calls_out", "signed_in", "service_off", "not_possible", "failed"];
+/** SM8: where one calls-out pass confirmed the app's readings. Elsewhere works, calls_out and failed mean nothing. */
 export const CALIBRATED_STACKS = ["aosp_imsstack"];
 export const UNCALIBRATED_RESULTS = ["signed_in", "service_off", "not_possible"];
 export const FEATURES = ["volte", "vowifi", "sms_over_ims", "video_calling", "vonr"];

@@ -42,8 +42,8 @@
             "description": "A feature switch, or apn: and the row key of a row OCD's own data has for this SIM's network. A row with the emergency type is refused."
           },
           "result": {
-            "enum": ["works", "signed_in", "service_off", "not_possible", "failed"],
-            "description": "With any ims_stack but aosp_imsstack (SM8) only signed_in, service_off and not_possible are allowed."
+            "enum": ["works", "calls_out", "signed_in", "service_off", "not_possible", "failed"],
+            "description": "works: calls both ways on this SIM, bearer and build, by packet counts. calls_out: an outgoing call only. Neither checks sound or speaks for emergency calls. With any ims_stack but aosp_imsstack (SM8) only signed_in, service_off and not_possible are allowed."
           }
         }
       }

@@ -25,7 +25,10 @@ echo "::add-mask::$CLOUDFLARE_ACCOUNT_ID"
 subdomain="$(api "$API/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" 2>/dev/null | jq -r '.result.subdomain // empty' || true)"
 if [ -z "$subdomain" ]; then
   subdomain="${RELAY_SUBDOMAIN:-open-carrier-week}"
-  api -X PUT "$API/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" --data "{\"subdomain\":\"$subdomain\"}" > /dev/null
+  if ! answer="$(api -X PUT "$API/accounts/$CLOUDFLARE_ACCOUNT_ID/workers/subdomain" --data "{\"subdomain\":\"$subdomain\"}")"; then
+    echo "Cloudflare refused the workers.dev name $subdomain: $(printf '%s' "$answer" | jq -c '.errors' 2>/dev/null)" >&2
+    exit 1
+  fi
 fi
 
 database() { npx wrangler d1 list --json | jq -r --arg name "$NAME" '.[] | select(.name == $name) | .uuid'; }

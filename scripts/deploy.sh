@@ -9,7 +9,10 @@ API=https://api.cloudflare.com/client/v4
 export CI=true WRANGLER_SEND_METRICS=false
 
 # A pasted secret can carry a stray line end, which Cloudflare reads as a bad header.
-CLOUDFLARE_API_TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d '[:space:]')"
+# A terminal's bracketed paste can also wrap it in escape markers.
+CLOUDFLARE_API_TOKEN="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | sed -E 's/\x1b\[20[01]~//g' | tr -d '[:space:]')"
+odd="$(printf '%s' "$CLOUDFLARE_API_TOKEN" | tr -d 'A-Za-z0-9_-' | wc -c)"
+echo "characters outside letters, digits, _ and -: $odd"
 export CLOUDFLARE_API_TOKEN
 echo "token length ${#CLOUDFLARE_API_TOKEN}, verify: $(curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/user/tokens/verify" | jq -c '{success, status: .result.status, errors}')"
 api() { curl -sS --fail-with-body -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" "$@"; }
